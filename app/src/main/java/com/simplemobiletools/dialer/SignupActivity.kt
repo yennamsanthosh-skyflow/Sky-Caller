@@ -46,7 +46,7 @@ class SignupActivity : AppCompatActivity() {
         if(ph.length<10)
             callback.onFailure(Exception("invalid mobile number"))
         else {
-            val url = "url/"+ph
+            val url = "http://192.168.0.109:3000/getIdByNumber/"+ph
             val request = okhttp3.Request.Builder().url(url).build()
             val okHttpClient = OkHttpClient()
             try {
@@ -55,11 +55,17 @@ class SignupActivity : AppCompatActivity() {
                         okHttpClient.newCall(request).execute().use { response ->
                             if (!response.isSuccessful)
                                 throw IOException("Unexpected code $response")
+                            val response1 = response.body!!.string()
+                            Log.d("response",response1)
+                            val responseBody = JSONObject(response1)
+                            val record = responseBody.getJSONArray("records").getJSONObject(0).getJSONObject("fields")
+
                             val shared = getSharedPreferences("SKYCALLER", MODE_PRIVATE)
                             val editor = shared.edit()
-                            editor.putString("skyflow_id","")
+                            editor.putString("skyflow_id",record.getString("skyflow_id"))
                             editor.putString("phone_number",ph)
                             editor.apply()
+                            callback.onSuccess(responseBody)
                         }
                     }
                 }

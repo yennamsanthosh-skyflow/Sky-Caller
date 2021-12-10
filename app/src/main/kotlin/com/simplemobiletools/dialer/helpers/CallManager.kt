@@ -7,6 +7,7 @@ import android.os.Looper
 import android.telecom.Call
 import android.telecom.InCallService
 import android.telecom.VideoProfile
+import android.util.Log
 import com.simplemobiletools.commons.extensions.getMyContactsCursor
 import com.simplemobiletools.commons.helpers.MyContactsContentProvider
 import com.simplemobiletools.commons.helpers.SimpleContactsHelper
@@ -76,8 +77,12 @@ class CallManager {
                 val uri = Uri.decode(handle)
                 if (uri.startsWith("tel:")) {
                     val number = uri.substringAfter("tel:")
-                   // callContact.number = number
-                    callContact.number = maskedNumber!!
+                    //callContact.number = number
+                    Log.d("uri",uri.toString())
+                    if(maskedNumber!=null)
+                        callContact.number = maskedNumber!!
+                    else
+                        callContact.number = ""
                     val name = SimpleContactsHelper(context).getNameFromPhoneNumber(number)
                     if(name.equals(number))
                         callContact.name = "Unknown number"

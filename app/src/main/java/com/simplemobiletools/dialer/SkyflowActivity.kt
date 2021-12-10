@@ -70,6 +70,15 @@ class SkyflowActivity : AppCompatActivity() {
                 else
                     business.text = "NOT BLOCKED"
                 foreign.text = calls.getString("blocked_countries")
+
+                if(calls.getString("block_spam").equals("true"))
+                    spam.text = "BLOCKED"
+                else
+                    spam.text = "NOT BLOCKED"
+
+                //val list  = calls.getString("blocked_countries")
+                foreign.text = calls.getString("blocked_countries")
+
                 dialog.dismiss()
 
             }
@@ -94,7 +103,14 @@ class SkyflowActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.edit -> {
-                startActivity(Intent(this,EditSkyflowActivity::class.java))
+                val intent = Intent(this,EditSkyflowActivity::class.java)
+                intent.putExtra("view_contact",view_contact.text.toString())
+                intent.putExtra("view_business",view_business.text.toString())
+                intent.putExtra("view_foreign",view_foreign.text.toString())
+                intent.putExtra("spam_calls",spam.text.toString())
+                intent.putExtra("business_calls",business.text.toString())
+                intent.putExtra("countries",foreign.text.toString())
+                startActivity(intent)
 
             }
         }

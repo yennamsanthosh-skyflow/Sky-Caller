@@ -1,17 +1,16 @@
 package com.simplemobiletools.dialer.services
 
-import android.R
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.net.Uri
 import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.InCallService
-import android.widget.ArrayAdapter
+import android.util.Log
+import androidx.annotation.WorkerThread
+import androidx.core.content.ContextCompat
 import com.simplemobiletools.dialer.App
 import com.simplemobiletools.dialer.Callback
 import com.simplemobiletools.dialer.activities.CallActivity
-import com.simplemobiletools.dialer.activities.MainActivity
 import com.simplemobiletools.dialer.helpers.CallManager
 import com.simplemobiletools.dialer.helpers.CallNotificationManager
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -45,7 +44,6 @@ class CallService : InCallService() {
 
     override fun onCallAdded(call: Call) {
         super.onCallAdded(call)
-        startActivity(CallActivity.getStartIntent(this))
         CallManager.call = call
         val sender = getDetails()
         var receiver = ""
@@ -63,17 +61,21 @@ class CallService : InCallService() {
        if(!sender.equals("") && !receiver.equals("")) {
            fetchDetails(sender, receiver, isInContact, object : Callback {
                override fun onSuccess(response: JSONObject) {
+
+                   Log.d("verify response",response.toString())
                    val isAllowed = response.getBoolean("allow")
-                   val inComing_number = response.get("incoming_number")
+                   val inComing_number = response.get("caller_number")
                    CallManager.setMaskedNumber(inComing_number.toString())
                    if (!isAllowed) {
                        CallManager.reject()
-                   } else {
-                       CallManager.inCallService = this@CallService
-                       CallManager.registerCallback(callListener)
-                       callNotificationManager.setupNotification()
                    }
-
+//                   else {
+//
+//                       CallManager.inCallService = this@CallService
+//                       CallManager.registerCallback(callListener)
+//                       callNotificationManager.setupNotification()
+//                   }
+                   startActivity(CallActivity.getStartIntent(this@CallService))
                }
 
                override fun onFailure(error: Exception) {
@@ -97,47 +99,52 @@ class CallService : InCallService() {
         return ""
     }
 
-    private fun fetchDetails(sender:String,receiver:String,isInContact:Boolean,callback: Callback) {
-
+   // @WorkerThread
+    private fun fetchDetails(receiver_number:String, incoming_number:String, isInContact:Boolean, callback: Callback) {
 
         val okHttpClient = OkHttpClient()
         val jsonBody = JSONObject()
-        jsonBody.put("sender",sender)
-        jsonBody.put("receiver",receiver)
+        jsonBody.put("caller_number",incoming_number)
+        jsonBody.put("receiver_number",receiver_number)
         jsonBody.put("isInContact",isInContact)
         val body: RequestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request
             .Builder()
-            .method("GET", body)
+            .method("POST", body)
             .addHeader("Authorization", "responseBody")
-            .url("url")
+           // .url("http://10.0.2.2:3000/verify")
+            .url("http://192.168.0.109:3000/verify")
             .build()
         try {
-            val thread = Thread {
-                run {
-                    okHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+//            val response = JSONObject()
+//            response.put("allow",false)
+//            response.put("caller_number","+9180*****93")
+//            callback.onSuccess(response)
+//            ContextCompat.getMainExecutor(applicationContext).execute({
+//                // This is where your UI code goes.
+
+                okHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
 
 
-                        override fun onFailure(call: okhttp3.Call, e: IOException) {
+                    override fun onFailure(call: okhttp3.Call, e: IOException) {
 
-                        }
+                    }
 
-                        override fun onResponse(call: okhttp3.Call, response: Response) {
-                            response.use {
-                                if (!response.isSuccessful) {
-                                        // send call
-                                    callback.onFailure(Exception("server error"))
-                                } else {
-                                    val responsebody = JSONObject(response.body!!.string())
-                                    callback.onSuccess(responsebody)
-                                }
+                    override fun onResponse(call: okhttp3.Call, response: Response) {
+                        response.use {
+                            if (!response.isSuccessful) {
+                                // send call
+                                callback.onFailure(Exception("server error"))
+                            } else {
+                                val responsebody = JSONObject(response.body!!.string())
+                                callback.onSuccess(responsebody)
                             }
                         }
+                    }
 
-                    })
-                }
-            }
-            thread.start()
+                })
+           // })
+
         }
         catch (exception: Exception) {
 

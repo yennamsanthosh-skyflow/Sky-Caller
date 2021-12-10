@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
-import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_edit_skyflow.*
 import kotlinx.android.synthetic.main.activity_edit_skyflow.business
 import kotlinx.android.synthetic.main.activity_edit_skyflow.foreign
@@ -27,14 +26,50 @@ class EditSkyflowActivity : AppCompatActivity() {
     var businessRedaction = ""
     var foreignRedaction = ""
     var businessCalls = false
-    val selectedList = mutableListOf<String>()
-
+    val blockListOfCountry = mutableListOf<String>()
+    var spamCalls = false
+    val listOfRedaction= mutableListOf<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_skyflow)
         setTitle("Edit Skyflow Security")
         getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true);
         getSupportActionBar()!!.setDisplayShowHomeEnabled(true);
+        listOfRedaction.add("PLAIN_TEXT")
+        listOfRedaction.add("REDACTED")
+        listOfRedaction.add("MASKED")
+        val spam_calls = intent.getStringExtra("spam_calls")
+        val foreign_calls = intent.getStringExtra("countries")
+        val business_calls = intent.getStringExtra("business_calls")
+
+        if(spam_calls.equals("BLOCKED")) {
+            spamSwitch.isChecked = true
+            spamCalls = true
+        } else {
+            spamSwitch.isChecked = false
+            spamCalls = false
+        }
+
+        if(business_calls.equals("BLOCKED")) {
+            bswitch.isChecked = true
+            businessCalls = true
+
+        } else {
+            bswitch.isChecked = false
+            businessCalls = false
+        }
+        val list = foreign_calls!!.split(",")
+        Log.d("list",list.toString())
+        if(list.isEmpty())
+        {
+            fswitch.isChecked = false
+        }
+        else
+        {
+            fswitch.isChecked =true
+            country_layout.visibility = View.VISIBLE
+            blockListOfCountry.addAll(list)
+        }
         editCalls()
         editView()
 
@@ -80,7 +115,8 @@ class EditSkyflowActivity : AppCompatActivity() {
         view.put("foreign_num",foreignRedaction)
         val call = JSONObject()
         call.put("block_business",businessCalls)
-        call.put("blocked_countries",selectedList.toString())
+        call.put("blocked_countries",blockListOfCountry.toString().replace("[","").replace("]",""))
+        call.put("block_spam",spamCalls)
         config.put("view_me",view)
         config.put("blocked_calls",call)
         fields.put("config",config)
@@ -160,18 +196,12 @@ class EditSkyflowActivity : AppCompatActivity() {
     }
 
     private fun editView() {
-        val list= mutableListOf<String>()
-        list.add("PLAIN_TEXT")
-        list.add("REDACTED")
-        list.add("MASKED")
-        val contactID = list.indexOf(intent.getStringExtra("contacts"))
-        val businessID = list.indexOf(intent.getStringExtra("business"))
-        val foreignID = list.indexOf(intent.getStringExtra("foreign"))
 
-
-
+        val contactID = listOfRedaction.indexOf(intent.getStringExtra("view_contact"))
+        val businessID = listOfRedaction.indexOf(intent.getStringExtra("view_business"))
+        val foreignID = listOfRedaction.indexOf(intent.getStringExtra("view_foreign"))
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this,
-            android.R.layout.simple_spinner_item, list)
+            android.R.layout.simple_spinner_item, listOfRedaction)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         contacts.setAdapter(adapter)
         business.setAdapter(adapter)
@@ -193,7 +223,7 @@ class EditSkyflowActivity : AppCompatActivity() {
                 position: Int,
                 id: Long,
             ) {
-                contactRedaction = list.get(position)
+                contactRedaction = listOfRedaction.get(position)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -207,12 +237,14 @@ class EditSkyflowActivity : AppCompatActivity() {
                 position: Int,
                 id: Long,
             ) {
-                businessRedaction = list.get(position)
+                businessRedaction = listOfRedaction.get(position)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         })
+
+
 
         foreign.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -221,7 +253,7 @@ class EditSkyflowActivity : AppCompatActivity() {
                 position: Int,
                 id: Long,
             ) {
-                foreignRedaction = list.get(position)
+                foreignRedaction = listOfRedaction.get(position)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -234,6 +266,7 @@ class EditSkyflowActivity : AppCompatActivity() {
 
     private fun editCalls() {
         val listOfCountries = mutableListOf<String>()
+        listOfCountries.add("Select Country")
         listOfCountries.add("India")
         listOfCountries.add("USA")
         listOfCountries.add("Australia")
@@ -243,10 +276,13 @@ class EditSkyflowActivity : AppCompatActivity() {
         listOfCountries.add("South Africa")
 
         val arr = ArrayAdapter<String>(this@EditSkyflowActivity,R.layout.support_simple_spinner_dropdown_item,
-            selectedList)
+            blockListOfCountry)
         countryList.setAdapter(arr)
         bswitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             businessCalls = isChecked
+        })
+        spamSwitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            spamCalls = isChecked
         })
         fswitch.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked){
@@ -255,7 +291,7 @@ class EditSkyflowActivity : AppCompatActivity() {
             else
             {
                 country_layout.visibility = View.INVISIBLE
-                selectedList.clear()
+                blockListOfCountry.clear()
                 arr.notifyDataSetChanged()
             }
         })
@@ -274,8 +310,10 @@ class EditSkyflowActivity : AppCompatActivity() {
                 position: Int,
                 id: Long,
             ) {
-                selectedList.add(listOfCountries.get(position))
-                arr.notifyDataSetChanged()
+                if(position !=0) {
+                    blockListOfCountry.add(listOfCountries.get(position))
+                    arr.notifyDataSetChanged()
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -285,7 +323,7 @@ class EditSkyflowActivity : AppCompatActivity() {
         countryList.setOnItemClickListener(object : AdapterView.OnItemClickListener
         {
             override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                selectedList.removeAt(p2)
+                blockListOfCountry.removeAt(p2)
                 arr.notifyDataSetChanged()
             }
         })

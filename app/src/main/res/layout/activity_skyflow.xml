@@ -24,94 +24,11 @@
 
 <!--    </LinearLayout>-->
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Block list"
-        android:textSize="18dp"
-        style="@style/SettingsSectionLabelStyle"
-        android:textAlignment="center"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/medium_margin"
-        android:background="@drawable/section_holder_stroke"
-        android:layout_marginTop="40dp"
-        android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <LinearLayout
-            style="@style/SettingsHolderTextViewOneLinerStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ripple_all_corners">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.5"
-            android:layout_height="wrap_content"
-            android:text="Business calls "
-            style="@style/SettingsTextLabelStyle"
-            />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.5"
-            android:layout_height="wrap_content"
-            android:text="NONE"
-            style="@style/SettingsTextLabelStyle"
-            android:textAlignment="textEnd"
-            android:id="@+id/business"
-            />
-        </LinearLayout>
-    </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/medium_margin"
-        android:background="@drawable/section_holder_stroke"
-        android:layout_marginTop="40dp"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <LinearLayout
-                style="@style/SettingsHolderTextViewOneLinerStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_all_corners">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="0.5"
-                    android:layout_height="wrap_content"
-                    android:text="Countries"
-                    style="@style/SettingsTextLabelStyle"
-                    />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="0.5"
-                    android:layout_height="wrap_content"
-                    android:text="NONE"
-                    style="@style/SettingsTextLabelStyle"
-                    android:textAlignment="textEnd"
-                    android:id="@+id/foreign"
-                    />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="View list"
+        android:text="How can the receiver see me"
         android:textSize="18dp"
         style="@style/SettingsSectionLabelStyle"
         android:textAlignment="center"
@@ -223,6 +140,133 @@
                     style="@style/SettingsTextLabelStyle"
                     android:textAlignment="textEnd"
                     android:id="@+id/view_foreign"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Blocked Numbers"
+        android:textSize="18dp"
+        style="@style/SettingsSectionLabelStyle"
+        android:textAlignment="center"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin"
+        android:background="@drawable/section_holder_stroke"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
+            style="@style/SettingsHolderTextViewOneLinerStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_all_corners">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="Business calls "
+            style="@style/SettingsTextLabelStyle"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:text="NONE"
+            style="@style/SettingsTextLabelStyle"
+            android:textAlignment="textEnd"
+            android:id="@+id/business"
+            />
+        </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin"
+        android:background="@drawable/section_holder_stroke"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_all_corners">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"
+                    android:text="Spam Calls"
+                    style="@style/SettingsTextLabelStyle"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"
+                    android:text="NONE"
+                    style="@style/SettingsTextLabelStyle"
+                    android:textAlignment="textEnd"
+                    android:id="@+id/spam"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/medium_margin"
+        android:background="@drawable/section_holder_stroke"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_all_corners">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"
+                    android:text="Countries"
+                    style="@style/SettingsTextLabelStyle"
+                    />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"
+                    android:text="NONE"
+                    style="@style/SettingsTextLabelStyle"
+                    android:textAlignment="textEnd"
+                    android:id="@+id/foreign"
                     />
             </LinearLayout>
         </LinearLayout>

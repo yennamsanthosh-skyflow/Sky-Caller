@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.media.AudioManager
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.os.Handler
 import android.os.PowerManager
 import android.telecom.Call
 import android.telecom.CallAudioState
+import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import com.simplemobiletools.commons.extensions.*
@@ -52,6 +54,19 @@ class CallActivity : SimpleActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call)
 
+//        val shared = getSharedPreferences("CALL", MODE_PRIVATE)
+//        val edit = shared.edit()
+//        edit.putString("caller_number","")
+//        edit.apply()
+//
+//        shared.registerOnSharedPreferenceChangeListener(object : SharedPreferences.OnSharedPreferenceChangeListener{
+//            override fun onSharedPreferenceChanged(p0: SharedPreferences?, p1: String?) {
+//                   Log.d("keyyy",p1.toString())
+//                caller_number_label.text = p0!!.getString(p1,"")
+//
+//            }
+//
+//        })
         updateTextColors(call_holder)
         initButtons()
         Toast.makeText(this,"incoming: "+intent.getStringExtra("incoming"),Toast.LENGTH_LONG).show()

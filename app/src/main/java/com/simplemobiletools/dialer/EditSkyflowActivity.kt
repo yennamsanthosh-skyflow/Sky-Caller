@@ -68,7 +68,7 @@ class EditSkyflowActivity : AppCompatActivity() {
     private fun doRequest(callback:Callback) {
 
 //        val url = "https://sb.area51.vault.skyflowapis.dev/v1/vaults/e728297fbdf846cfacff7fa13adb8b15/table1/"+getDetails("mynumber")
-        val url = "https://sb.area51.vault.skyflowapis.dev/v1/vaults/e728297fbdf846cfacff7fa13adb8b15/table1/"+"5a2e2d3d-436a-4d98-a64b-4e846adc180d"
+        val url = "https://sb.area51.vault.skyflowapis.dev/v1/vaults/e728297fbdf846cfacff7fa13adb8b15/table1/"+getSkyflowId()
         val okHttpClient = OkHttpClient()
         val jsonBody = JSONObject()
         val record = JSONObject()
@@ -87,44 +87,67 @@ class EditSkyflowActivity : AppCompatActivity() {
         record.put("fields",fields)
         jsonBody.put("record",record)
         val body: RequestBody = jsonBody.toString().toRequestBody("application/json".toMediaTypeOrNull())
-        val request = Request
-            .Builder()
-            .method("PUT", body)
-            .addHeader("Authorization", "Bearer token")
-            .url(url)
-            .build()
-        try {
-            val thread = Thread {
-                run {
-                    okHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
-                        override fun onFailure(call: Call, e: IOException) {
-                            callback.onFailure(Exception("Server error"))
-                        }
-
-                        override fun onResponse(call: Call, response: Response) {
-                            response.use {
-                                val responsebody = JSONObject(response.body!!.string())
-                                if (!response.isSuccessful) {
-                                    // send call
-                                    Log.d("failure",responsebody.toString())
-                                    callback.onFailure(Exception("server error"))
-                                } else {
-                                    Log.d("success",responsebody.toString())
-                                    callback.onSuccess(responsebody)
-                                }
-                            }
-                            callback.onSuccess(JSONObject())
-                        }
-
-                    })
-                }
+        SkyflowTokenProvider().getBearerToken( object : Skyflow.Callback{
+            override fun onFailure(exception: Any) {
+                Log.d("error",exception.toString())
+                callback.onFailure(Exception("error occured"))
             }
-            thread.start()
-        }
-        catch (exception: Exception) {
 
-        }
+            override fun onSuccess(responseBody: Any) {
 
+                val request = Request
+                    .Builder()
+                    .method("PUT", body)
+                    .addHeader("Authorization", "Bearer $responseBody")
+                    .url(url)
+                    .build()
+                try {
+                    val thread = Thread {
+                        run {
+                            okHttpClient.newCall(request).enqueue(object : okhttp3.Callback {
+                                override fun onFailure(call: Call, e: IOException) {
+                                    callback.onFailure(Exception("Server error"))
+                                }
+
+                                override fun onResponse(call: Call, response: Response) {
+                                    response.use {
+                                        val responsebody = JSONObject(response.body!!.string())
+                                        if (!response.isSuccessful) {
+                                            // send call
+                                            Log.d("failure",responsebody.toString())
+                                            callback.onFailure(Exception("server error"))
+                                        } else {
+                                            Log.d("success",responsebody.toString())
+                                            callback.onSuccess(responsebody)
+                                        }
+                                    }
+                                    //callback.onSuccess(JSONObject())
+                                }
+
+                            })
+                        }
+                    }
+                    thread.start()
+                }
+                catch (exception: Exception) {
+
+                }
+
+
+
+            }
+
+        })
+
+    }
+
+    fun getSkyflowId() :String
+    {
+        val skyflowId: String? = getSharedPreferences("SKYCALLER", MODE_PRIVATE).getString("skyflow_id", null)
+        if (skyflowId != null) {
+            return skyflowId
+        }
+        return  ""
     }
 
     override fun onSupportNavigateUp(): Boolean {

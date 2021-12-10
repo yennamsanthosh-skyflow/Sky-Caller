@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/big_text_size"
+        android:text="Welcome to Skycaller"
+        android:textAlignment="center"
+        android:layout_marginTop="500px"
+        ></TextView>
+    <EditText
+        android:id="@+id/phone_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:hint="mobile number"
+        android:padding="12dp"
+        android:layout_marginTop="@dimen/big_text_size"></EditText>
+    <Button
+        android:layout_width="400px"
+        android:layout_height="wrap_content"
+        android:id="@+id/signup_submit"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/big_text_size"
+        style="@style/ColoredButtonStyle"
+        android:text="signup"
+        ></Button>
+</LinearLayout>

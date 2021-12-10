@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.simplemobiletools.dialer.activities.MainActivity
 import kotlinx.android.synthetic.main.activity_skyflow.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -30,8 +31,8 @@ class SkyflowActivity : AppCompatActivity() {
 
     private fun fetchFromSkyflow() {
         val skyflowConfiguration = Skyflow.Configuration(
-            "VAULT_ID",
-            "VAULT_URL",
+            "e728297fbdf846cfacff7fa13adb8b15",
+            "https://sb.area51.vault.skyflowapis.dev",
              SkyflowTokenProvider()
         )
         val skyflowClient = Skyflow.init(skyflowConfiguration)
@@ -41,7 +42,7 @@ class SkyflowActivity : AppCompatActivity() {
         record.put("redaction", RedactionType.PLAIN_TEXT)
 
         val skyflowIds = ArrayList<String>()
-        skyflowIds.add("ID")
+        skyflowIds.add(getSkyflowId())
         record.put("ids",skyflowIds)
         recordsArray.put(record)
         val records = JSONObject()
@@ -74,6 +75,15 @@ class SkyflowActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    fun getSkyflowId() :String
+    {
+        val skyflowId: String? = getSharedPreferences("SKYCALLER", MODE_PRIVATE).getString("skyflow_id", null)
+        if (skyflowId != null) {
+           return skyflowId
+        }
+        return  ""
     }
 
 

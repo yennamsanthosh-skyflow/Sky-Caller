@@ -2,6 +2,7 @@ package com.simplemobiletools.dialer.services
 
 import android.R
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.provider.ContactsContract
 import android.telecom.Call
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter
 import com.simplemobiletools.dialer.App
 import com.simplemobiletools.dialer.Callback
 import com.simplemobiletools.dialer.activities.CallActivity
+import com.simplemobiletools.dialer.activities.MainActivity
 import com.simplemobiletools.dialer.helpers.CallManager
 import com.simplemobiletools.dialer.helpers.CallNotificationManager
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -45,7 +47,7 @@ class CallService : InCallService() {
         super.onCallAdded(call)
         startActivity(CallActivity.getStartIntent(this))
         CallManager.call = call
-        val sender = ""
+        val sender = getDetails()
         var receiver = ""
         val handle = try {
             call.details?.handle?.toString()
@@ -56,44 +58,42 @@ class CallService : InCallService() {
         if (uri.startsWith("tel:")) {
             val number = uri.substringAfter("tel:")
             receiver = number
-//            if(number.equals("+918608200493"))
-//                CallManager.reject()
         }
         val isInContact=isPresentInContact(receiver)
+       if(!sender.equals("") && !receiver.equals("")) {
+           fetchDetails(sender, receiver, isInContact, object : Callback {
+               override fun onSuccess(response: JSONObject) {
+                   val isAllowed = response.getBoolean("allow")
+                   val inComing_number = response.get("incoming_number")
+                   CallManager.setMaskedNumber(inComing_number.toString())
+                   if (!isAllowed) {
+                       CallManager.reject()
+                   } else {
+                       CallManager.inCallService = this@CallService
+                       CallManager.registerCallback(callListener)
+                       callNotificationManager.setupNotification()
+                   }
 
-        val senderSkyflowID = getDetails(sender)
-        val receiverSkyflowID = getDetails(receiver)
-        fetchDetails(senderSkyflowID,receiverSkyflowID,isInContact,object : Callback{
-            override fun onSuccess(response: JSONObject) {
-                val isAllowed = response.getBoolean("allow")
-                val inComing_number = response.get("incoming_number")
-                CallManager.setMaskedNumber(inComing_number.toString())
-                if(!isAllowed)
-                {
-                    CallManager.reject()
-                }
-                else
-                {
-                    CallManager.inCallService = this@CallService
-                    CallManager.registerCallback(callListener)
-                    callNotificationManager.setupNotification()
-                }
+               }
 
-            }
-
-            override fun onFailure(error: Exception) {
-                        CallManager.inCallService = this@CallService
-                        CallManager.registerCallback(callListener)
-                        callNotificationManager.setupNotification()
-            }
-        })
+               override fun onFailure(error: Exception) {
+                   CallManager.inCallService = this@CallService
+                   CallManager.registerCallback(callListener)
+                   callNotificationManager.setupNotification()
+               }
+           })
+       }
 //        CallManager.setMaskedNumber("+91xxxxxxxx93")
 //        CallManager.inCallService = this
 //        CallManager.registerCallback(callListener)
 //        callNotificationManager.setupNotification()
     }
 
-    private fun getDetails(user: String) :String {
+    private fun getDetails() :String {
+        val ph: String? = getSharedPreferences("SKYCALLER", MODE_PRIVATE).getString("phone_number",null)
+        if (ph != null) {
+           return ph
+        }
         return ""
     }
 
